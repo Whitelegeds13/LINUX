@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Estudiantes - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Lista de Estudiantes</h2>
+    <a href="{% url 'add_student' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Agregar Estudiante</a>
+    
+    {% if students %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Carrera</th>
+                <th>Tokens</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.name }} {{ student.lastname }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.career|default:"-" }}</td>
+                <td>{{ student.total_tokens }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay estudiantes registrados.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Blockchain - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Blockchain URP</h2>
+    <p>Total de bloques: {{ chain|length }}</p>
+    <a href="{% url 'validate_blockchain' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Validar Blockchain</a>
+</div>
+
+{% for block in chain reversed %}
+<div class="block">
+    <h3>Bloque #{{ block.index }}</h3>
+    <p><strong>Hash:</strong> <span class="hash">{{ block.hash }}</span></p>
+    <p><strong>Hash Anterior:</strong> <span class="hash">{{ block.previous_hash }}</span></p>
+    <p><strong>Fecha:</strong> {{ block.timestamp_formatted }}</p>
+    <p><strong>Nonce:</strong> {{ block.nonce }}</p>
+    <p><strong>Datos:</strong></p>
+    <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 5px; overflow-x: auto;">{{ block.data }}</pre>
+</div>
+{% endfor %}
+{% endblock %}

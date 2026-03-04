@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Tokens Otorgados - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Tokens Otorgados</h2>
+    <p>Los tokens se otorgan automaticamente cuando un estudiante asiste a todos sus cursos.</p>
+    
+    {% if rewards %}
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo de Barras</th>
+                <th>Token ID</th>
+                <th>Estudiante</th>
+                <th>Fecha</th>
+                <th>Tokens</th>
+                <th>Hash del Bloque</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reward in rewards %}
+            <tr>
+                <td><strong>{{ reward.barcode }}</strong></td>
+                <td style="font-family: monospace; font-size: 0.8rem;">{{ reward.token_id }}</td>
+                <td>{{ reward.student.name }} {{ reward.student.lastname }}</td>
+                <td>{{ reward.reward_date }}</td>
+                <td><span class="token-badge">+{{ reward.tokens }}</span></td>
+                <td style="font-family: monospace; font-size: 0.8rem;">{{ reward.block_hash|truncatechars:20 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay tokens otorgados.</p>
+    {% endif %}
+</div>
+{% endblock %}

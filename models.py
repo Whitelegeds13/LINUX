@@ -81,6 +81,7 @@ class DatabaseModels:
             """
             CREATE TABLE IF NOT EXISTS token_rewards (
                 reward_id INT AUTO_INCREMENT PRIMARY KEY,
+                token_id VARCHAR(36) UNIQUE NOT NULL,
                 student_id VARCHAR(20) NOT NULL,
                 tokens INT NOT NULL,
                 reward_date DATE NOT NULL,

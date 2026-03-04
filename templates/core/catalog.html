@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Catalogo de Canje - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Catalogo de Productos para Canje</h2>
+    <a href="{% url 'redeem_tokens' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Canjear Tokens</a>
+    
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Costo (Tokens)</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>{{ item.item_description|default:"-" }}</td>
+                <td>{{ item.item_cost }}</td>
+                <td>{{ item.item_category|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay productos disponibles.</p>
+    {% endif %}
+</div>
+{% endblock %}

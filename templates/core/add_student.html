@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Estudiante - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Agregar Estudiante</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>ID del Estudiante:</label>
+        <input type="text" name="student_id" required>
+        
+        <label>Nombre:</label>
+        <input type="text" name="name" required>
+        
+        <label>Apellidos:</label>
+        <input type="text" name="lastname" required>
+        
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        
+        <label>Carrera:</label>
+        <input type="text" name="career">
+        
+        <label>Semestre:</label>
+        <input type="text" name="semester">
+        
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'students' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

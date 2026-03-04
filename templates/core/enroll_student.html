@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Matricular Estudiante - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Matricular Estudiante en Curso</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Estudiante:</label>
+        <select name="student_id" required>
+            <option value="">Seleccionar estudiante</option>
+            {% for student in students %}
+            <option value="{{ student.student_id }}">{{ student.name }} {{ student.lastname }} ({{ student.student_id }})</option>
+            {% endfor %}
+        </select>
+        
+        <label>Curso:</label>
+        <select name="course_id" required>
+            <option value="">Seleccionar curso</option>
+            {% for course in courses %}
+            <option value="{{ course.course_id }}">{{ course.course_name }} ({{ course.course_code }})</option>
+            {% endfor %}
+        </select>
+        
+        <label>Semestre:</label>
+        <input type="text" name="semester" placeholder="2024-I" required>
+        
+        <label>Anio Academico:</label>
+        <input type="text" name="academic_year" placeholder="2024" required>
+        
+        <button type="submit" class="btn btn-primary">Matricular</button>
+        <a href="{% url 'courses' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

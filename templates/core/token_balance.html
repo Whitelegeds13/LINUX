@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Balance de Tokens - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Balance de Tokens</h2>
+    <p><strong>Estudiante:</strong> {{ student.name }} {{ student.lastname }}</p>
+    <p><strong>ID:</strong> {{ student.student_id }}</p>
+    <p><strong>Email:</strong> {{ student.email }}</p>
+    <p><strong>Total de Tokens:</strong> {{ student.total_tokens }}</p>
+</div>
+
+<div class="card">
+    <h3>Recompensas Recibidas</h3>
+    {% if rewards %}
+    <table>
+        <thead>
+            <tr>
+                <th>Token ID</th>
+                <th>Fecha</th>
+                <th>Tokens</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reward in rewards %}
+            <tr>
+                <td>{{ reward.token_id }}</td>
+                <td>{{ reward.reward_date }}</td>
+                <td>+{{ reward.tokens }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay recompensas.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Canjes Realizados</h3>
+    {% if redemptions %}
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Fecha</th>
+                <th>Tokens</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for redemption in redemptions %}
+            <tr>
+                <td>{{ redemption.item_name }}</td>
+                <td>{{ redemption.redemption_date }}</td>
+                <td>-{{ redemption.item_cost }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay canjes.</p>
+    {% endif %}
+</div>
+{% endblock %}

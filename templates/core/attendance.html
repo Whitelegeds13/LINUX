@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Asistencia - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Registro de Asistencia</h2>
+    <a href="{% url 'record_attendance' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Registrar Asistencia</a>
+    
+    {% if attendances %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estudiante</th>
+                <th>Curso</th>
+                <th>Asistio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att in attendances %}
+            <tr>
+                <td>{{ att.attendance_date }}</td>
+                <td>{{ att.student.name }} {{ att.student.lastname }}</td>
+                <td>{{ att.course.course_name }}</td>
+                <td>{% if att.present %}Si{% else %}No{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay registros de asistencia.</p>
+    {% endif %}
+</div>
+{% endblock %}

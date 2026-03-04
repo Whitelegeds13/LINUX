@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Blockchain URP - Universidad Ricardo Palma{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Blockchain URP</h1>
+    <p>Sistema de Tokens por Asistencia - Universidad Ricardo Palma</p>
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <h3>{{ total_students }}</h3>
+        <p>Estudiantes</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_courses }}</h3>
+        <p>Cursos</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_rewards }}</h3>
+        <p>Tokens Otorgados</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Bienvenido al Sistema de Blockchain URP</h2>
+    <p>Este sistema registra la asistencia de los estudiantes y otorga tokens cuando un estudiante asiste a todos sus cursos matriculados en un dia.</p>
+    <br>
+    <p><strong>Como funciona:</strong></p>
+    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+        <li>Los estudiantes se matriculan en cursos</li>
+        <li>Se registra la asistencia diaria por curso</li>
+        <li>Si un estudiante asiste a TODOS sus cursos, recibe 1 token</li>
+        <li>Los tokens pueden canjearse por productos del catalogo</li>
+    </ul>
+    <br>
+    <a href="{% url 'init_database' %}" class="btn btn-primary">Inicializar Base de Datos</a>
+</div>
+
+<div class="card">
+    <h2>Caracteristicas del Sistema</h2>
+    <ul style="margin-left: 2rem;">
+        <li><strong>Tokens Unicos:</strong> Cada token tiene un ID unico (UUID) y esta registrado en la blockchain</li>
+        <li><strong>Blockchain:</strong> Implementacion de blockchain con Prueba de Trabajo (SHA-256)</li>
+        <li><strong>Seguridad:</strong> No es posible copiar o falsificar tokens</li>
+        <li><strong>Trazabilidad:</strong> Cada token puede rastrearse desde su creacion hasta su uso</li>
+    </ul>
+</div>
+{% endblock %}

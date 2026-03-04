@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Procesar Asistencia Diaria - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Procesar Asistencia Diaria</h2>
+    <p>Selecciona la fecha para procesar la asistencia y otorgar tokens a los estudiantes que asistieron a todos sus cursos.</p>
+    <br>
+    <form method="post">
+        {% csrf_token %}
+        <label>Fecha:</label>
+        <input type="date" name="attendance_date" required>
+        
+        <button type="submit" class="btn btn-primary">Procesar Asistencia</button>
+    </form>
+</div>
+{% endblock %}

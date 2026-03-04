@@ -6,7 +6,7 @@ import hashlib
 import json
 import time
 import uuid
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from datetime import datetime
 
 
@@ -15,16 +15,6 @@ class Block:
     
     def __init__(self, index: int, timestamp: float, data: Dict[str, Any], 
                  previous_hash: str, nonce: int = 0):
-        """
-        Inicializa un bloque.
-        
-        Args:
-            index: Indice del bloque en la cadena
-            timestamp: Marca de tiempo de creacion
-            data: Datos del bloque (asistencias, transacciones, etc.)
-            previous_hash: Hash del bloque anterior
-            nonce: Numero usado para la prueba de trabajo
-        """
         self.index = index
         self.timestamp = timestamp
         self.data = data
@@ -33,12 +23,7 @@ class Block:
         self.hash = self.calculate_hash()
     
     def calculate_hash(self) -> str:
-        """
-        Calcula el hash del bloque usando SHA-256.
-        
-        Returns:
-            Hash del bloque en formato hexadecimal
-        """
+        """Calcula el hash del bloque usando SHA-256."""
         block_content = (
             str(self.index) +
             str(self.timestamp) +
@@ -79,17 +64,84 @@ class Blockchain:
     
     DIFFICULTY = 2  # Dificultad de la prueba de trabajo
     
-    def __init__(self):
+    def __init__(self, load_from_db=True):
         """Inicializa la blockchain con el bloque genesis."""
-        self.chain: List[Block] = [self.create_genesis_block()]
+        # Intentar cargar desde la base de datos
+        if load_from_db:
+            self.chain = self._load_from_db()
+            if not self.chain:
+                self.chain = [self.create_genesis_block()]
+        else:
+            self.chain = [self.create_genesis_block()]
+    
+    def _load_from_db(self):
+        """Carga la cadena desde la base de datos."""
+        try:
+            from .models import BlockchainBlock
+            blocks = BlockchainBlock.objects.all().order_by('block_index')
+            if not blocks.exists():
+                return None
+            
+            chain = []
+            for block_record in blocks:
+                block = Block(
+                    index=block_record.block_index,
+                    timestamp=block_record.block_timestamp.timestamp(),
+                    data=block_record.block_data,
+                    previous_hash=block_record.block_previous_hash,
+                    nonce=block_record.block_nonce
+                )
+                block.hash = block_record.block_hash
+                chain.append(block)
+            
+            return chain if chain else None
+        except Exception:
+            # Si hay error (base de datos no disponible), retornar None
+            return None
+    
+    def save_to_db(self):
+        """Guarda la cadena completa en la base de datos."""
+        try:
+            from .models import BlockchainBlock
+            from django.utils import timezone
+            
+            for block in self.chain:
+                BlockchainBlock.objects.update_or_create(
+                    block_index=block.index,
+                    defaults={
+                        'block_timestamp': timezone.make_aware(datetime.fromtimestamp(block.timestamp)),
+                        'block_data': block.data,
+                        'block_previous_hash': block.previous_hash,
+                        'block_nonce': block.nonce,
+                        'block_hash': block.hash
+                    }
+                )
+            return True
+        except Exception:
+            return False
+    
+    def _save_block_to_db(self, block):
+        """Guarda un solo bloque en la base de datos."""
+        try:
+            from .models import BlockchainBlock
+            from django.utils import timezone
+            
+            BlockchainBlock.objects.update_or_create(
+                block_index=block.index,
+                defaults={
+                    'block_timestamp': timezone.make_aware(datetime.fromtimestamp(block.timestamp)),
+                    'block_data': block.data,
+                    'block_previous_hash': block.previous_hash,
+                    'block_nonce': block.nonce,
+                    'block_hash': block.hash
+                }
+            )
+            return True
+        except Exception:
+            return False
     
     def create_genesis_block(self) -> Block:
-        """
-        Crea el bloque genesis (primer bloque de la cadena).
-        
-        Returns:
-            El bloque genesis
-        """
+        """Crea el bloque genesis (primer bloque de la cadena)."""
         return Block(
             index=0,
             timestamp=time.time(),
@@ -107,15 +159,7 @@ class Blockchain:
         return self.chain[-1]
     
     def add_block(self, data: Dict[str, Any]) -> Block:
-        """
-        Anade un nuevo bloque a la cadena con prueba de trabajo.
-        
-        Args:
-            data: Datos a incluir en el bloque
-            
-        Returns:
-            El nuevo bloque anadido
-        """
+        """Anade un nuevo bloque a la cadena con prueba de trabajo."""
         previous_block = self.get_latest_block()
         
         # Generar un nonce unico basado en UUID para mayor seguridad
@@ -136,18 +180,14 @@ class Blockchain:
         new_block = self.proof_of_work(new_block)
         
         self.chain.append(new_block)
+        
+        # Guardar en base de datos
+        self._save_block_to_db(new_block)
+        
         return new_block
     
     def proof_of_work(self, block: Block) -> Block:
-        """
-        Implementa la prueba de trabajo (mineria del bloque).
-        
-        Args:
-            block: Bloque a minar
-            
-        Returns:
-            Bloque minado con el nonce correcto
-        """
+        """Implementa la prueba de trabajo (mineria del bloque)."""
         target = "0" * self.DIFFICULTY
         
         while block.hash[:self.DIFFICULTY] != target:
@@ -157,12 +197,7 @@ class Blockchain:
         return block
     
     def is_chain_valid(self) -> bool:
-        """
-        Valida la integridad de toda la blockchain.
-        
-        Returns:
-            True si la cadena es valida, False en caso contrario
-        """
+        """Valida la integridad de toda la blockchain."""
         for i in range(1, len(self.chain)):
             current_block = self.chain[i]
             previous_block = self.chain[i - 1]
@@ -187,53 +222,8 @@ class Blockchain:
         """Retorna el numero de bloques en la cadena."""
         return len(self.chain)
     
-    def find_blocks_by_type(self, block_type: str) -> List[Block]:
-        """
-        Busca bloques por tipo de datos.
-        
-        Args:
-            block_type: Tipo de bloque a buscar
-            
-        Returns:
-            Lista de bloques que coinciden
-        """
-        return [
-            block for block in self.chain 
-            if block.data.get("type") == block_type
-        ]
-    
-    def find_blocks_by_student(self, student_id: str) -> List[Block]:
-        """
-        Busca bloques relacionados con un estudiante especifico.
-        
-        Args:
-            student_id: ID del estudiante
-            
-        Returns:
-            Lista de bloques relacionados con el estudiante
-        """
-        results = []
-        for block in self.chain:
-            data = block.data
-            if data.get("student_id") == student_id:
-                results.append(block)
-            elif data.get("type") == "daily_attendance":
-                # Buscar en la lista de estudiantes
-                students = data.get("students", [])
-                if any(s.get("student_id") == student_id for s in students):
-                    results.append(block)
-        return results
-    
     def find_token_transactions(self, student_id: str) -> List[Dict[str, Any]]:
-        """
-        Busca todas las transacciones de tokens de un estudiante.
-        
-        Args:
-            student_id: ID del estudiante
-            
-        Returns:
-            Lista de transacciones de tokens
-        """
+        """Busca todas las transacciones de tokens de un estudiante."""
         transactions = []
         for block in self.chain:
             data = block.data
@@ -263,10 +253,14 @@ class Blockchain:
         return transactions
 
 
-# Instancia global de la blockchain
-blockchain = Blockchain()
+# Instancia global de la blockchain (se carga desde la base de datos si esta disponible)
+blockchain = Blockchain(load_from_db=True)
 
 
 def get_blockchain() -> Blockchain:
     """Retorna la instancia global de la blockchain."""
+    global blockchain
+    # Verificar si la cadena esta vacia y hay datos en la BD
+    if blockchain.get_block_count() == 1:  # Solo genesis
+        blockchain = Blockchain(load_from_db=True)
     return blockchain

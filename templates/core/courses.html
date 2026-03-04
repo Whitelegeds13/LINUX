@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Cursos - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Lista de Cursos</h2>
+    <a href="{% url 'add_course' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Agregar Curso</a>
+    <a href="{% url 'enroll_student' %}" class="btn btn-secondary" style="margin-bottom: 1rem;">Matricular Estudiante</a>
+    
+    {% if courses %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Creditos</th>
+                <th>Profesor</th>
+                <th>Horario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.course_id }}</td>
+                <td>{{ course.course_code }}</td>
+                <td>{{ course.course_name }}</td>
+                <td>{{ course.credits }}</td>
+                <td>{{ course.teacher_name|default:"-" }}</td>
+                <td>{{ course.schedule|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay cursos registrados.</p>
+    {% endif %}
+</div>
+{% endblock %}

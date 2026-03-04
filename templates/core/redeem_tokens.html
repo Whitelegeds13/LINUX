@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Canjear Tokens - Blockchain URP{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Canjear Tokens</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Estudiante:</label>
+        <select name="student_id" required>
+            <option value="">Seleccionar estudiante</option>
+            {% for student in students %}
+            <option value="{{ student.student_id }}">{{ student.name }} {{ student.lastname }} - Tokens: {{ student.total_tokens }}</option>
+            {% endfor %}
+        </select>
+        
+        <label>Producto:</label>
+        <select name="item_id" required>
+            <option value="">Seleccionar producto</option>
+            {% for item in items %}
+            <option value="{{ item.item_id }}">{{ item.item_name }} ({{ item.item_cost }} tokens)</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn btn-primary">Canjear</button>
+    </form>
+</div>
+{% endblock %}
